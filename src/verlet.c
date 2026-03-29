@@ -15,25 +15,53 @@
 void applyForces(VerletObject* objects, int size)
 {
     for (int i = 0; i < size; i++) {
+        //pulls particles downwards on every Y axis frame
+        //calls from the VerletObject struct and the acceleration vector uses the Y axis
+        //which is 0, 1, 2 for X, Y, Z respectively
         objects[i].acceleration[1] += GRAVITY;
     }
 }
 
+// ===============================
+// Collision handling, checks for partivle overlaps
+// and applies a simple response by moving the particles apart
+//not needed for Galileo's physics simulation
+// ===============================
+/*
 void handleCollision(VerletObject* a, VerletObject* b)
 {
+    //stores the direction between particle a and b
     mfloat_t axis[VEC3_SIZE];
+    //calculates the difference between the two point and stores it into the axis
+    //essentially creates a vector pointing from b to a
     vec3_subtract(axis, a->current, b->current);
+    //calculates the distance between the two particles by getting the length of the axis vector
+    //uses pythagorean theorem to calculate the distance between the two particles
     mfloat_t dist = vec3_length(axis);
+    // if particles are overlapping
+    //if the distance between the two points are less than the combines radius, then
+    //they are touching
     if (dist < a->radius + b->radius) {
+        //3D vector that will store the normalized collision direction
         mfloat_t norm[VEC3_SIZE];
+        // normalizes the axis vector by diving it by its own length to get a unit vector
+        // that is the length pointing from B to A
+        //we must know this to know the direction of pushing the particles apart
         vec3_divide_f(norm, axis, dist);
+        //calculates how much the particles are actually overlapping
+        // by subtracting the combined radius to the actual distance
         mfloat_t delta = a->radius + b->radius - dist;
+        //it moves the overlap by half the distance so that together 
+        // they will be moved apart by the full distance of the overlap
         vec3_multiply_f(norm, norm, 0.5 * delta);
+        //this adds the correction vector to particle A to be able to move it away from B 
         vec3_add(a->current, a->current, norm);
+        //this subtracts the correction vector from particle B to be able to move it away from A
         vec3_subtract(b->current, b->current, norm);
     }
 }
-
+*/
+/*
 void applyCollisions(VerletObject* objects, int size)
 {
     for (int a = 0; a < size; a++) {
@@ -44,9 +72,11 @@ void applyCollisions(VerletObject* objects, int size)
         }
     }
 }
+*/
 
 #define DIMENSION 58 // CONTAINER_RADIUS / VERLET_RADIUS + 5
 #define MAX_PER_CELL 4
+/*
 VerletObject* grid[DIMENSION][DIMENSION][DIMENSION][MAX_PER_CELL];
 
 void handleGridCollision(VerletObject** currentCell, VerletObject** otherCell)
@@ -125,10 +155,10 @@ void* threadFunction(void* arg)
     }
     return NULL;
 }
-
+*/
 pthread_t threads[THREAD_COUNT];
 int thread_ids[THREAD_COUNT];
-
+/*
 void applyGridCollisions(VerletObject* objects, int size)
 {
     clearGrid();
@@ -143,6 +173,7 @@ void applyGridCollisions(VerletObject* objects, int size)
         pthread_join(threads[t], NULL);
     }
 }
+*/
 
 void applyConstraints(VerletObject* objects, int size, mfloat_t* containerPosition)
 {
