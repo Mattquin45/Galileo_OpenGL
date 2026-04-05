@@ -26,11 +26,11 @@ void applyForces(GalileoObject* galileoObjects, int size)
         // Calculate the net force on the object
         float net_force = (galileoObjects[i].mass * GRAVITY) - drag;
         // Update the object's acceleration based on the net force
-        // A = g * m - drag / m  = g - drag
+        // A = g * m - drag / m  = g - drag/m
         float acceleration = net_force / galileoObjects[i].mass;
 
-        galileoObjects[i].acceleration[1] = acceleration;
-        
+        galileoObjects[i].acceleration[1] += acceleration;
+
         //galileoObjects[i].acceleration[1] = acceleration;
         //float speed = objects[i].acceleration[1];
         //speed += GRAVITY;
@@ -48,42 +48,35 @@ pthread_t threads[THREAD_COUNT];
 int thread_ids[THREAD_COUNT];
 
 
-void applyConstraints(VerletObject* objects, int size, mfloat_t* containerPosition)
+void applyConstraints(GalileoObject* objects, int size, mfloat_t* containerPosition)
 {
     // ========= Floor =========
-    // for (int i = 0; i < size; i++) {
-    //     VerletObject* obj = &(objects[i]);
-    //     if (obj->current[1] < -2.0f) {
-    //         mfloat_t disp = obj->current[1] - obj->previous[1];
-    //         obj->current[1] = -2.0f;
-    //         obj->previous[1] = obj->current[1] + disp;
-    //     }
-    // }
+     for (int i = 0; i < size; i++) {
+         GalileoObject* obj = &(objects[i]);
+         if (obj->position[1] <= 0) {
+                obj->position[1] = 0;
+                // simple bounce with damping
+                obj->velocity[1] *= -0.5f; 
+             
+        }
+     }
 
 }
 // ===============================
 //MAIN SIMULATION FUNCTIONS
 // ================================
-void updatePositions(VerletObject* objects, int size, float dt)
+void updatePositions(GalileoObject* objects, int size, float dt)
 {
     for (int i = 0; i < size; i++) {
-        VerletObject* obj = &(objects[i]);
+        GalileoObject* obj = &(objects[i]);
         mfloat_t disp[VEC3_SIZE];
-        //velocity approximation
-        //displacement = current_position - previous_position
-        vec3_subtract(disp, obj->current, obj->previous);
-
-        //prepares for the next frame movement by setting previous to current
-        vec3_assign(obj->previous, obj->current);
-
-        //apply acceleration to the displacement
-        //uses physics formula at^2 to calculate the change in position due to acceleration
-        vec3_multiply_f(obj->acceleration, obj->acceleration, dt * dt);
-
-
-        vec3_add(obj->current, obj->current, disp);
-        vec3_add(obj->current, obj->current, obj->acceleration);
-        vec3_zero(obj->acceleration);
+        
+        //since we know the acceleration, we can just then update the velocity and position of the object using the acceleration
+        obj -> velocity[1] += obj -> acceleration[1] * dt;
+        obj->position[1] += obj->velocity[1] * dt;
+        // Reset acceleration for the next frame
+        obj->acceleration[1] = 0.0f;
+        
     }
 }
 
