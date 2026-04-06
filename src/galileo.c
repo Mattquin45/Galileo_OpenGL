@@ -1,16 +1,12 @@
-#include "verlet.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <pthread.h>
-#include "galileo.h"
+#include <galileo.h>
 
 #define GRAVITY -15.0f
 #define THREAD_COUNT 8
-//Controlling the air resistance wanted
-#define AIR_DENSITY 1.225f
-//Objects we want to test the air resistance on
 
 
 // ===============================
@@ -24,7 +20,7 @@ void applyForces(GalileoObject* galileoObjects, int size)
         //which is 0, 1, 2 for X, Y, Z respectively
         float drag = 0.5f * AIR_DENSITY * galileoObjects[i].velocity[1] * galileoObjects[i].velocity[1] * galileoObjects[i].drag_coefficient * galileoObjects[i].cross_sectional_area; 
         // Calculate the net force on the object
-        float net_force = (galileoObjects[i].mass * GRAVITY) - drag;
+        float net_force = (galileoObjects[i].mass * GRAVITY) + drag;
         // Update the object's acceleration based on the net force
         // A = g * m - drag / m  = g - drag/m
         float acceleration = net_force / galileoObjects[i].mass;
@@ -42,7 +38,7 @@ void applyForces(GalileoObject* galileoObjects, int size)
 
 #define DIMENSION 58 // CONTAINER_RADIUS / VERLET_RADIUS + 5
 #define MAX_PER_CELL 4
-VerletObject* grid[DIMENSION][DIMENSION][DIMENSION][MAX_PER_CELL];
+GalileoObject* grid[DIMENSION][DIMENSION][DIMENSION][MAX_PER_CELL];
 
 pthread_t threads[THREAD_COUNT];
 int thread_ids[THREAD_COUNT];
@@ -80,6 +76,7 @@ void updatePositions(GalileoObject* objects, int size, float dt)
     }
 }
 
+/*
 void addForce(VerletObject* objects, int size, mfloat_t* center, float strength)
 {
     for (int i = 0; i < size; i++) {
@@ -95,3 +92,4 @@ void addForce(VerletObject* objects, int size, mfloat_t* center, float strength)
         }
     }
 }
+*/
