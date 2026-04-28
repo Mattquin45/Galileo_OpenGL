@@ -4,6 +4,7 @@
 #include "util.h"
 
 //A utility that reads a file and returns its content as a string
+//usability: used to read shader files
 char* readFile(const char* filename)
 {
     FILE* fp;
