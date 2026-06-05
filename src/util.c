@@ -41,3 +41,25 @@ char* readFile(const char* filename)
 
     return content;
 }
+
+//initializes a dynamic array to hold float values for 
+//usability: used to hold vertex data when loading models from .obj files
+void initialize(DynamicArray* dynArray, size_t initialCapacity)
+{
+    dynArray->array = (float*)malloc(initialCapacity * sizeof(float));
+    dynArray->size = 0;
+    dynArray->capacity = initialCapacity;
+}
+
+//pushes a float value to the dynamic array, helps to manage the float count per vertex when loading .obj files
+//usability: used to hold vertex data (floats = 8) when loading models from .obj files
+//floats are 8 because they include position (3), normal (3), and texture coordinates (2)
+void push(DynamicArray* dynArray, float value)
+{
+    if (dynArray->size == dynArray->capacity) {
+        // Double the capacity
+        dynArray->capacity *= 2;
+        dynArray->array = (float*)realloc(dynArray->array, dynArray->capacity * sizeof(float));
+    }
+    dynArray->array[dynArray->size++] = value;
+}
