@@ -32,8 +32,8 @@ Model* createModel(Mesh* mesh);
 
 void destroyModel(Model* model);
 
-Mesh* createMesh(const char* filename, bool instanced);
+//Mesh* createMesh(const char* filename, bool instanced);
 
-void destroyMesh(Mesh* mesh);
+//void destroyMesh(Mesh* mesh);
 
 #endif

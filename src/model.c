@@ -59,26 +59,40 @@ DynamicArray *loadOBJ(const char *filename) {
         char* words[4];
         //tokenization of the line into words
         // the first word is the type of data (v, vt, vn, f)
-        
         words[0] = strtok(line, " ");
+
+        // this is then for the data that follows the the type of first word
+        // given that the first word is the type of data, the next three words are the actual data
         for (int i = 1; i < 4; ++i) {
             words[i] = strtok(NULL, " ");
         }
 
+        // this data then gets processed and stored depending on the type of data it is
+        // this is for the position of the vertex
+        // the structure of the process is that it uses an array of data type of the vertex
+        // then it stores it to that array and it increments the count of the variable correlated with the data
+
+        //
         if (strcmp(words[0], "v") == 0) {
             v[v_count].x = atof(words[1]);
             v[v_count].y = atof(words[2]);
             v[v_count].z = atof(words[3]);
             v_count++;
+
+        // this is for the texture image on the vertex
         } else if (strcmp(words[0], "vt") == 0) {
             vt[vt_count].x = atof(words[1]);
             vt[vt_count].y = atof(words[2]);
             vt_count++;
+
+        // this is for the normal surface face vector of the vertex
         } else if (strcmp(words[0], "vn") == 0) {
             vn[vn_count].x = atof(words[1]);
             vn[vn_count].y = atof(words[2]);
             vn[vn_count].z = atof(words[3]);
             vn_count++;
+
+        // this then processes how the vertex is connected to the other vertices in the model
         } else if (strcmp(words[0], "f") == 0) {
             char* v1[3];
             char* v2[3];
@@ -105,4 +119,23 @@ DynamicArray *loadOBJ(const char *filename) {
     }
 
     return vertices;
+}
+
+void processVertex(DynamicArray* vertices, char* vertexData[3], Vertex v[], Vertex vt[], Vertex vn[])
+{
+    
+    int vertex_ptr = atoi(vertexData[0]) - 1;
+    int texture_ptr = atoi(vertexData[1]) - 1;
+    int normal_ptr = atoi(vertexData[2]) - 1;
+
+    push(vertices, v[vertex_ptr].x);
+    push(vertices, v[vertex_ptr].y);
+    push(vertices, v[vertex_ptr].z);
+
+    push(vertices, vn[normal_ptr].x);
+    push(vertices, vn[normal_ptr].y);
+    push(vertices, vn[normal_ptr].z);
+
+    push(vertices, vt[texture_ptr].x);
+    push(vertices, vt[texture_ptr].y);
 }
