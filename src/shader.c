@@ -11,6 +11,7 @@
 
 // both are needed to create a shader program that links the vertex(transforms vertices to 3D)
 // and fragment shader (colors the pixels) together
+// this is necessary because the shader creation tells the GPU how to process the vertices and pixels of the model
 
 unsigned int createShader(const char* vertexFile, const char* fragmentFile)
 {

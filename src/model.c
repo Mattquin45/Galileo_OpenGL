@@ -11,6 +11,80 @@
 //DynamicArray* loadOBJ(const char* filename);
 //void processVertex(DynamicArray* vertices, char* vertexData[3], Vertex v[], Vertex vt[], Vertex vn[]);
 
+// creates a mesh object from a file (the geometry)
+Mesh *createMesh(const char *filename, bool instanced) {
+
+  // Load the specific file and store it in a dynamic array
+  // it is then reflected on dArray -> array/ total count is dArray->size
+    DynamicArray* dArray = loadOBJ(filename);
+
+    // allocates the mesh object on the heap
+    Mesh *mesh = malloc(sizeof(Mesh));
+    // assigns the vertices to the mesh object
+    mesh->vertices = dArray->array;
+    // calculates the number of vertices (each vertex has 8 floats)
+    mesh->numVertices = dArray->size / STRIDE;
+
+    // Create our Vertex Buffer and Vertex Array Objects
+    // this is necessary because the GPU needs to know how to process the vertices and pixels of the model
+    // it remembers how the vertex data is organized so it can process with ease on OpenGL
+    glGenVertexArrays(1, &(mesh->VAO));
+    glBindVertexArray(mesh->VAO);
+
+    //creates a buffer object and allocates memory for it on the GPU
+    glGenBuffers(1, &(mesh->VBO));
+    // bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
+
+    // it then activates the buffer object and binds it to the vertex buffer object
+    glBindBuffer(GL_ARRAY_BUFFER, mesh->VBO);
+
+    // this then uploads the vertex data to the GPU and tells it how to process the vertices and pixels of the model from the CPU to the GPU
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * STRIDE * mesh->numVertices, mesh->vertices, GL_STATIC_DRAW);
+
+    // Position
+    //this is the attribute slot of where it tells the GPU where to find the vertex data in the buffer object
+    glEnableVertexAttribArray(0);
+    //format then releases the 3 floats of position data and then jumps 32 bytes to the next vertex data and then repeats the process
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, STRIDE * sizeof(float), (void*)0);
+    // Normal
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, STRIDE * sizeof(float), (void*)12);
+    // Texture
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, STRIDE * sizeof(float), (void*)24);
+
+    if (instanced) {
+        // Position
+        glGenBuffers(1, &(mesh->positionVBO));
+        glBindBuffer(GL_ARRAY_BUFFER, mesh->positionVBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(float) * INSTANCE_STRIDE * MAX_INSTANCES, NULL, GL_STREAM_DRAW);
+        glEnableVertexAttribArray(3);
+        glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, INSTANCE_STRIDE * sizeof(float), (void*)0);
+        glVertexAttribDivisor(3, 1);
+
+        // Velocity
+        glGenBuffers(1, &(mesh->velocityVBO));
+        glBindBuffer(GL_ARRAY_BUFFER, mesh->velocityVBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(float) * MAX_INSTANCES, NULL, GL_STREAM_DRAW);
+        glEnableVertexAttribArray(4);
+        glVertexAttribPointer(4, 1, GL_FLOAT, GL_FALSE, sizeof(float), (void*)0);
+        glVertexAttribDivisor(4, 1);
+    }
+
+    // note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex buffer object so afterwards we can safely unbind
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    // You can unbind the VAO afterwards so other VAO calls won't accidentally modify this VAO, but this rarely happens. Modifying other
+    // VAOs requires a call to glBindVertexArray anyways so we generally don't unbind VAOs (nor VBOs) when it's not directly necessary.
+    glBindVertexArray(0);
+
+    // uncomment this call to draw in wireframe polygons.
+    // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+    return mesh;
+}
+
+
 DynamicArray *loadOBJ(const char *filename) {
 
   // allocates the vertices on the heap
@@ -93,6 +167,8 @@ DynamicArray *loadOBJ(const char *filename) {
             vn_count++;
 
         // this then processes how the vertex is connected to the other vertices in the model
+        // this processes the 3 corners fo the model and then it uses the 
+        // shape v, vt, vn to process the vertex data and store it in the dynamic array
         } else if (strcmp(words[0], "f") == 0) {
             char* v1[3];
             char* v2[3];
@@ -108,6 +184,7 @@ DynamicArray *loadOBJ(const char *filename) {
             v3[1] = strtok(NULL, "/");
             v3[2] = strtok(NULL, "/");
 
+            // after that it then processes the vertex data and stores it in the dynamic array
             processVertex(vertices, v1, v, vt, vn);
             processVertex(vertices, v2, v, vt, vn);
             processVertex(vertices, v3, v, vt, vn);
@@ -123,11 +200,16 @@ DynamicArray *loadOBJ(const char *filename) {
 
 void processVertex(DynamicArray* vertices, char* vertexData[3], Vertex v[], Vertex vt[], Vertex vn[])
 {
-    
+
+    // the reason why it subtracts from 1 is because obj files 
+    // are 1 indexed and C is 0 indexed
+    // this is for the specific corners of the triangle
+
     int vertex_ptr = atoi(vertexData[0]) - 1;
     int texture_ptr = atoi(vertexData[1]) - 1;
     int normal_ptr = atoi(vertexData[2]) - 1;
 
+    // after that, then it pushes the specific vertex data to the dynamic array in the order of position, normal, and texture coordinates
     push(vertices, v[vertex_ptr].x);
     push(vertices, v[vertex_ptr].y);
     push(vertices, v[vertex_ptr].z);
