@@ -9,6 +9,7 @@ GalileoObject objects[3];
 
 int main(){
     //Object = mass, position, velocity, acceleration, drag coefficient, cross sectional area
+    //each variable has different value arrays because of X, Y, Z axis
     //Object 1: A feather
     objects[0].mass = 0.01f;
     objects[0].position[0] = 0.0f;

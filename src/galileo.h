@@ -25,7 +25,7 @@ typedef struct {
 void updatePositions(GalileoObject* objects, int size, float dt);
 //Makes OpenGl create an actual floor for the objects stop with manipulating the positions 
 //and velocities of the objects when they hit the floor
-void applyConstraints(GalileoObject* objects, int size, mfloat_t* containerPosition);
+void applyConstraints(GalileoObject* objects, int size);
 //Applies Galileo's experiment of Objects with different masses falling at the same rate
 //but with air resistance
 void applyForces(GalileoObject *galileoObjects, int size);

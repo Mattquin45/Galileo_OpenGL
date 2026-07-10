@@ -8,8 +8,8 @@
 
 #define VERTEX_LIMIT 2000
 
-//DynamicArray* loadOBJ(const char* filename);
-//void processVertex(DynamicArray* vertices, char* vertexData[3], Vertex v[], Vertex vt[], Vertex vn[]);
+DynamicArray* loadOBJ(const char* filename);
+void processVertex(DynamicArray* vertices, char* vertexData[3], Vertex v[], Vertex vt[], Vertex vn[]);
 
 // creates a mesh object from a file (the geometry)
 Mesh *createMesh(const char *filename, bool instanced) {
@@ -195,6 +195,7 @@ DynamicArray *loadOBJ(const char *filename) {
         free(line);
     }
 
+    //returns vertices which are ready to be used in the OpenGL shader program
     return vertices;
 }
 

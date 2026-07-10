@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <pthread.h>
-#include <galileo.h>
+#include "galileo.h"
 
 #define GRAVITY -15.0f
 #define THREAD_COUNT 8
@@ -38,13 +38,12 @@ void applyForces(GalileoObject* galileoObjects, int size)
 
 #define DIMENSION 58 // CONTAINER_RADIUS / VERLET_RADIUS + 5
 #define MAX_PER_CELL 4
-GalileoObject* grid[DIMENSION][DIMENSION][DIMENSION][MAX_PER_CELL];
-
+//GalileoObject* grid[DIMENSION][DIMENSION][DIMENSION][MAX_PER_CELL];
 pthread_t threads[THREAD_COUNT];
 int thread_ids[THREAD_COUNT];
 
 
-void applyConstraints(GalileoObject* objects, int size, mfloat_t* containerPosition)
+void applyConstraints(GalileoObject* objects, int size)
 {
     // ========= Floor =========
      for (int i = 0; i < size; i++) {
@@ -65,7 +64,6 @@ void updatePositions(GalileoObject* objects, int size, float dt)
 {
     for (int i = 0; i < size; i++) {
         GalileoObject* obj = &(objects[i]);
-        mfloat_t disp[VEC3_SIZE];
         
         //since we know the acceleration, we can just then update the velocity and position of the object using the acceleration
         obj -> velocity[1] += obj -> acceleration[1] * dt;
