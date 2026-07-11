@@ -53,23 +53,32 @@ void drawMesh(Mesh *mesh, unsigned int shaderID, GLenum mode,
 
     // this sets up the projection matrix
     mfloat_t projection[MAT4_SIZE];
-
     // this sets the projection matrix for the mesh object
+    // this then tells the GPU how to project the mesh object onto the screen
+    // the format is mat4_perspective(field_of_view, screen aspect ratio, near, far);
     mat4_perspective(projection, to_radians(45.0), (float)1280 / (float)720, 0.1, 100.0);
-    // this sets the projection matrix for the mesh object
-
     glUniformMatrix4fv(glGetUniformLocation(shaderID, "projection"),
         1, GL_FALSE, projection);
 
+
+    // the way it binds the vertex data together is by using a struct variable called VAO (Vertex Array Object)
+    // this saves the vertex data on how it is organized from model.h and then tells the GPU how to process the vertices and pixels of the model
+    // VAO is then talking to glBindVertexArray saying, to use the struct data to read the vertex data and then draw the mesh object
     glBindVertexArray(mesh->VAO);
 
+
+    // this then draws the mesh object to the screen by using the vertex data and the shader program
+    // the format is glDrawArrays(mode, first, count);
+    // mode is the type of primitive to draw (GL_TRIANGLES, GL_LINES, etc)
     glDrawArrays(mode, 0, mesh->numVertices);
 
+    // this then frees the shader program and the VAO so that it can be used again for the next mesh object
     glUseProgram(0);
-
     glBindVertexArray(0);
 }
 
+
+/*
 void drawInstanced(Mesh* mesh, unsigned int shaderID, GLenum mode, int num, mfloat_t scale)
 {
     glUseProgram(shaderID);
@@ -91,3 +100,4 @@ void drawInstanced(Mesh* mesh, unsigned int shaderID, GLenum mode, int num, mflo
 
     glBindVertexArray(0);
 }
+*/

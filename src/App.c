@@ -1,11 +1,25 @@
-#include <stdio.h>
+#include <stdbool.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
-#include <galileo.h>
+#include <time.h>
+
+#include "dependencies/include/GL/glew.h"
+#include "dependencies/include/GLFW/glfw3.h"
+
+#include "graphics.h"
+#include "shader.h"
+#include "model.h"
+#include "galileo.h"
+//#include "camera.h"
 
 
 //declare an array of objects to simulate
 GalileoObject objects[3];
+
+//settings of window for GLEW
+const unsigned int SCR_WIDTH = 1280;
+const unsigned int SCR_HEIGHT = 720;
 
 int main(){
     //Object = mass, position, velocity, acceleration, drag coefficient, cross sectional area
@@ -43,4 +57,11 @@ int main(){
     objects[1].cross_sectional_area = 0.05f;
 
 
+
+    GLFWwindow* window;
+
+    window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Verlet Integration", NULL, NULL);
+    if (!window) {
+        glfwTerminate();
+        return -1;
 }
