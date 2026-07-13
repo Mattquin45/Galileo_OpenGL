@@ -60,8 +60,69 @@ int main(){
 
     GLFWwindow* window;
 
-    window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Verlet Integration", NULL, NULL);
+
+    if (!glfwInit()) {
+        printf("Failed to initialize GLFW\n");
+        return -1;
+    }
+
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+    //MAC OSX compatibility
+    #ifdef __APPLE__
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+    #endif
+
+    // creates a window with the specified width, height, and title. The last two parameters are for monitor and share, which are set to NULL for a simple window.
+    window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "galileo simulation", NULL, NULL);
     if (!window) {
         glfwTerminate();
         return -1;
+    }
+
+    // ataches the OpenGL context to the window, allowing OpenGL commands to be executed in that window.
+    glfwMakeContextCurrent(window);
+
+    /* Set up a callback function for when the window is resized */
+    //glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    //glfwSwapInterval(1);
+    
+    /* Initialize GLEW */
+    glewInit();
+
+    /* OpenGL Settings */
+    glClearColor(0.1, 0.1, 0.1, 1.0);
+    glClearStencil(0);
+
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
+
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
+    glFrontFace(GL_CCW);
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    glPointSize(3.0);
+
+    while(!glfwWindowShouldClose(window)){
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        //this show the actual frame of the window and then polls for events like keyboard and mouse input
+        glfwSwapBuffers(window);
+        glfwPollEvents();
+
+
+        if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS){
+            glfwSetWindowShouldClose(window, true);   
+        }
+        
+
+    }
+
+    glfwTerminate();
+    return 0;
 }
