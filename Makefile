@@ -12,7 +12,7 @@ LIBS = -L$(GLFW_PREFIX)/lib -L$(GLEW_PREFIX)/lib \
        -framework Cocoa -framework OpenGL -framework IOKit
 
 # Output executable
-OUTPUT = app
+OUTPUT = galileo_air
 
 # Source and object files
 SRC_DIR = src
@@ -30,9 +30,6 @@ $(OUTPUT): $(OBJ)
 %.o: %.c
 	$(CC) $(CFLAGS) $(INCLUDES) -c -o $@ $<
 
-# Debug build
-debug: CFLAGS += -DDEBUG -O0 -g
-debug: clean $(OUTPUT)
 
 # Clean
 clean:
